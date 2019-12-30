@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.nuttawutmalee.RCTBluetoothSerial.RCTBluetoothSerialPackage;
 import com.solinor.bluetoothstatus.RNBluetoothManagerPackage;
 import io.github.alexkorep.RNBluetoothHeadsetDetectPackage;
 import com.facebook.react.ReactNativeHost;

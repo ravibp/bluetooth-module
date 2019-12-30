@@ -13,6 +13,7 @@
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-bluetooth-headset-detect": "^1.1.1",
+    "react-native-bluetooth-serial-next": "^1.2.3",
     "react-native-bluetooth-status": "^1.4.1"
   },
   "devDependencies": {
