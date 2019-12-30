@@ -13,6 +13,8 @@ import {
   View,
   Text,
   StatusBar,
+  FlatList,
+  Item,
 } from 'react-native';
 
 import React, {Component} from 'react';
@@ -81,6 +83,10 @@ class App extends Component {
   }
 
   scanDevices = async () => {
+    let btStatus = await BluetoothSerial.isEnabled();
+    if (!btStatus) {
+      this.toggleBluetoothState();
+    }
     this.setState({loading: true}, async () => {
       const devices = await BluetoothSerial.discoverUnpairedDevices();
       console.log('Available devices:', devices);
@@ -101,8 +107,11 @@ class App extends Component {
       try {
         let device = await BluetoothSerial.connect(id);
         console.log('device', device);
-        this.setState({connectStatus: 'connected', connectedDevice: device});
-        
+        if (device) {
+          this.setState({connectStatus: 'connected', connectedDevice: device});
+        } else {
+          this.setState({connectStatus: 'notConnected'});
+        }
       } catch (err) {
         console.log('not able to connect');
         this.setState({connectStatus: 'notConnected'});
@@ -126,32 +135,14 @@ class App extends Component {
             Scan BT {this.state.loading && '(Scanning...)'}
           </Text>
           <View>
-            {!this.state.loading && (
-              <Text>
-                Available Devices:
-                {connectStatus === 'connecting' && '(Connecting...)'}
-                {connectStatus === 'connected' && '(Connected)'}
-                {connectStatus === 'notConnected' && '(Connection failed)'}
-              </Text>
-            )}
-          </View>
-          {devices.length > 0 &&
-            devices.map(device => {
-              return (
-                <Text
-                  onPress={() => {
-                    this.connectDevice(device.id);
-                  }}>
-                  {device.name ? device.name : device.address}
-                </Text>
-              );
-            })}
-          <View>
-            <Text>Paired Devices:</Text>
+            <Text style={{fontWeight: 'bold', marginVertical: 10}}>
+              Paired Devices:
+            </Text>
             {pairedDevices.length > 0 &&
               pairedDevices.map(device => {
                 return (
                   <Text
+                    key={device.id}
                     onPress={() => {
                       this.connectDevice(device.id);
                     }}>
@@ -160,6 +151,32 @@ class App extends Component {
                 );
               })}
           </View>
+
+          <View>
+            {!this.state.loading && (
+              <Text style={{fontWeight: 'bold', marginTop: 30}}>
+                Available Devices:
+                {connectStatus === 'connecting' && '(Connecting...)'}
+                {connectStatus === 'connected' && '(Connected)'}
+                {connectStatus === 'notConnected' && '(Connection failed)'}
+              </Text>
+            )}
+          </View>
+          {!this.state.loading &&
+            devices.length > 0 &&
+            devices.map(device => {
+              return (
+                <Text
+                  key={device.id}
+                  style={{marginVertical: 5}}
+                  onPress={() => {
+                    this.connectDevice(device.id);
+                  }}>
+                  {device.name ? device.name : device.address}
+                </Text>
+              );
+            })}
+
           {connectStatus === 'connected' && connectedDevice && (
             <Text style={styles.button}>
               Connected to:{' '}
